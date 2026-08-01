@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Library App</title>
+<title><%= viewData.title %> | Library App</title>
 <link href="/css/styles.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome/6.4.0/css/all.min.css">
 </head>
@@ -27,10 +27,13 @@ duration-200">
 <i class="fas fa-info-circle mr-3"></i>
 <span>About</span>
 </a>
-<a href="/contact" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition
-duration-200">
+<a href="/contact" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200">
 <i class="fas fa-envelope mr-3"></i>
 <span>Contact</span>
+</a>
+<a href="/books" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200">
+<i class="fas fa-book mr-3"></i>
+<span>Books</span>
 </a>
 </nav>
 </div>
@@ -60,7 +63,7 @@ duration-200">
 <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200">
 <i class="fas fa-search"></i>
 </button>
-<div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center cursorpointer hover:bg-blue-600 transition duration-200">
+<div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition duration-200">
 <i class="fas fa-user text-white"></i>
 </div>
 </div>

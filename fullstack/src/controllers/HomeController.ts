@@ -1,24 +1,22 @@
 import type { Request, Response } from 'express';
+
+type ViewData = {
+  title: string;
+};
+
 export class HomeController {
+  static index(_req: Request, res: Response): void {
+    const viewData: ViewData = { title: 'Home' };
+    res.render('home/index', { viewData });
+  }
 
- static index(req: Request, res: Response): void {
-    const viewData: { [key: string]: any } = {};
-    viewData["title"] = "Home";
+  static about(_req: Request, res: Response): void {
+    const viewData: ViewData = { title: 'About' };
+    res.render('home/about', { viewData });
+  }
 
-    res.render('home/index', { viewData: viewData });
-
- }
- static about(req: Request, res: Response): void {
-    const viewData: { [key: string]: any } = {};
-    viewData["title"] = "About";
-
-    res.render('home/about', { viewData: viewData });
-
- }
-    static contact(req: Request, res: Response): void {
-        const viewData = {title: "Contact"};
-
-        res.render('home/contact', {viewData});
- }
-
+  static contact(_req: Request, res: Response): void {
+    const viewData: ViewData = { title: 'Contact' };
+    res.render('home/contact', { viewData });
+  }
 }
