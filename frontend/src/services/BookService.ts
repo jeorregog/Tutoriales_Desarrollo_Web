@@ -9,7 +9,6 @@ export class BookService {
 
   static getBookById(id: number): BookInterface | undefined {
     return useBookStore().books.find((book) => book.id === id);
-
   }
 
   static createBook(book: CreateBookDTO): void {
