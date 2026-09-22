@@ -1,19 +1,60 @@
 <script setup lang="ts">
-import { useBookReviews } from '@/composables/useBookReviews.js';
+import { onMounted, ref } from 'vue';
+import { ReviewService } from '@/services/ReviewService.js';
+import type { ReviewInterface } from '@/interfaces/ReviewInterface.js';
 
 const props = defineProps<{
   bookId: number;
 }>();
 
-const { canSubmit, form, formatReviewDate, isSubmitting, reviews, submitReview } = useBookReviews(
-  () => props.bookId,
-);
+const reviews = ref<ReviewInterface[]>([]);
+
+const form = ref({
+  rating: 5,
+  comment: '',
+  author: '',
+});
+
+const isSubmitting = ref(false);
+
+async function submitReview() {
+  if (!form.value.comment.trim()) return;
+  isSubmitting.value = true;
+  await ReviewService.createReview({
+    bookId: props.bookId,
+    rating: Math.min(5, Math.max(1, form.value.rating)),
+    comment: form.value.comment.trim(),
+    author: form.value.author.trim() || undefined,
+  });
+  form.value = { rating: 5, comment: '', author: '' };
+  isSubmitting.value = false;
+
+  getReviews();
+}
+
+function formatDate(iso?: string): string {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('es-CO', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+async function getReviews() {
+  reviews.value = await ReviewService.getReviewsByBookId(props.bookId);
+}
+
+onMounted(() => {
+  getReviews();
+});
 </script>
 
 <template>
   <div class="space-y-6">
     <h3 class="text-lg font-semibold text-gray-800">Reviews</h3>
 
+    <!-- Create review form -->
     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
       <h4 class="text-sm font-medium text-gray-700 mb-3">Add a review</h4>
       <form @submit.prevent="submitReview" class="space-y-3">
@@ -28,7 +69,6 @@ const { canSubmit, form, formatReviewDate, isSubmitting, reviews, submitReview }
             <option v-for="n in 5" :key="n" :value="n">{{ n }} star{{ n > 1 ? 's' : '' }}</option>
           </select>
         </div>
-
         <div>
           <label for="comment" class="block text-sm text-gray-600 mb-1">Comment</label>
           <textarea
@@ -40,7 +80,6 @@ const { canSubmit, form, formatReviewDate, isSubmitting, reviews, submitReview }
             required
           />
         </div>
-
         <div>
           <label for="author" class="block text-sm text-gray-600 mb-1">Your name (optional)</label>
           <input
@@ -51,10 +90,9 @@ const { canSubmit, form, formatReviewDate, isSubmitting, reviews, submitReview }
             placeholder="Name"
           />
         </div>
-
         <button
           type="submit"
-          :disabled="isSubmitting || !canSubmit"
+          :disabled="isSubmitting || !form.comment.trim()"
           class="bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           Post review
@@ -62,6 +100,7 @@ const { canSubmit, form, formatReviewDate, isSubmitting, reviews, submitReview }
       </form>
     </div>
 
+    <!-- Review list -->
     <ul class="space-y-4">
       <li
         v-for="review in reviews"
@@ -71,16 +110,12 @@ const { canSubmit, form, formatReviewDate, isSubmitting, reviews, submitReview }
         <div class="flex items-center justify-between gap-2 mb-2">
           <span class="font-medium text-gray-800">{{ review.author || 'Anonymous' }}</span>
           <span class="text-amber-500 text-sm" :title="`${review.rating} stars`">
-            <span
-              v-for="star in 5"
-              :key="star"
-              v-text="star <= review.rating ? '\u2605' : '\u2606'"
-            />
+            {{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}
           </span>
         </div>
         <p class="text-gray-600 text-sm whitespace-pre-wrap">{{ review.comment }}</p>
         <p v-if="review.createdAt" class="text-gray-400 text-xs mt-2">
-          {{ formatReviewDate(review.createdAt) }}
+          {{ formatDate(review.createdAt) }}
         </p>
       </li>
       <li v-if="reviews.length === 0" class="text-gray-500 text-sm py-4">
