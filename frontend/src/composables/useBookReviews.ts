@@ -18,7 +18,7 @@ function createInitialForm(): ReviewForm {
   };
 }
 
-export function useBookReviews(bookId: MaybeRefOrGetter<number>) {
+/*export function useBookReviews(bookId: MaybeRefOrGetter<number>) {
   const reviewStore = useReviewStore();
   const form = ref<ReviewForm>(createInitialForm());
   const isSubmitting = ref(false);
@@ -55,4 +55,4 @@ export function useBookReviews(bookId: MaybeRefOrGetter<number>) {
     reviews,
     submitReview,
   };
-}
+}*/
